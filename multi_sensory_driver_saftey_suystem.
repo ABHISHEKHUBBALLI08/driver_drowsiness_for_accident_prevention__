@@ -1,0 +1,60 @@
+const int Sinput = 10;    // Define Sinput pin
+const int Buz = 3;        // Define Buz pin
+const int relay = 5;      // Define relay pin
+const int trigPin = 7;    // Define TRIG pin for ultrasonic sensor
+const int echoPin = 6;    // Define ECHO pin for ultrasonic sensor
+
+// Variables
+long duration;
+int distance;
+
+void setup() {
+    Serial.begin(9600);         // Initialize serial communication
+    pinMode(Sinput, INPUT);     // Set Sinput pin as input
+    pinMode(Buz, OUTPUT);       // Set Buz pin as output
+    pinMode(relay, OUTPUT);     // Set relay pin as output
+    pinMode(trigPin, OUTPUT);   // Set TRIG pin as output
+    pinMode(echoPin, INPUT);    // Set ECHO pin as input
+    digitalWrite(Buz, LOW);     // Ensure buzzer is initially off
+    digitalWrite(relay, HIGH);  // Ensure relay is initially on (motor running)
+}
+
+void loop() {
+    int val = digitalRead(Sinput);  // Read input from Sinput pin
+    distance = getDistance();       // Get distance from ultrasonic sensor
+
+    if (val == HIGH || distance <= 10) {  // Check if eyes closed or obstacle within 10 cm
+        digitalWrite(Buz, HIGH);   // Turn on the buzzer
+        Serial.println("Buzzer ON");
+        delay(2000);               // Wait for 2 seconds
+        digitalWrite(Buz, LOW);    // Turn off the buzzer
+        Serial.println("Buzzer OFF");
+
+        digitalWrite(relay, LOW);  // Turn off the relay (motor stop)
+        Serial.println("Motor Stopped");
+        delay(2000);               // Wait for another 2 seconds
+    } else if (distance <= 30) {   // Check if obstacle within 30 cm but more than 10 cm
+        digitalWrite(Buz, HIGH);   // Turn on the buzzer
+        Serial.println("Obstacle Detected: Buzzer ON");
+        delay(100);                // Short delay to avoid rapid polling
+    } else {  // If input is LOW and no close obstacle
+        digitalWrite(Buz, LOW);    // Ensure the buzzer is off
+        digitalWrite(relay, HIGH); // Ensure the relay is on (motor running)
+        Serial.println("Driver Alert and No Close Obstacle"); // Print status
+    }
+
+    delay(100);  // Short delay to avoid rapid polling
+}
+
+// Function to get distance from ultrasonic sensor
+int getDistance() {
+    digitalWrite(trigPin, LOW);
+    delayMicroseconds(2);
+    digitalWrite(trigPin, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(trigPin, LOW);
+
+    duration = pulseIn(echoPin, HIGH);
+    int distance = duration * 0.034 / 2;  // Calculate distance in cm
+    return distance;
+}
