@@ -1,4 +1,4 @@
-Driver Safety and Obstacle Detection System 🚗🛑
+# Driver Safety and Obstacle Detection System 🚗🛑
 Overview
 This project implements a Driver Safety and Obstacle Detection System designed to monitor driver drowsiness and detect nearby obstacles to improve road safety. The system uses sensors to track the driver’s eye closure and obstacle proximity, triggering alerts and taking action if necessary.
 
